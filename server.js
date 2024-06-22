@@ -7,10 +7,12 @@ const port = process.env.PORT || 3000;
 
 app.use(express.json());
 
+// Root route
 app.get('/', (req, res) => {
     res.send('Daraja STK Push API');
 });
 
+// Endpoint to authenticate with Daraja API and retrieve access token
 app.get('/authenticate', async (req, res) => {
     const { CONSUMER_KEY, CONSUMER_SECRET } = process.env;
     const auth = Buffer.from(`${CONSUMER_KEY}:${CONSUMER_SECRET}`).toString('base64');
@@ -29,6 +31,7 @@ app.get('/authenticate', async (req, res) => {
     }
 });
 
+// Endpoint to initiate STK push
 app.post('/stkpush', async (req, res) => {
     const { phoneNumber, amount } = req.body;
     const { SHORTCODE, PASSKEY, CALLBACK_URL } = process.env;
@@ -39,15 +42,14 @@ app.post('/stkpush', async (req, res) => {
     const password = Buffer.from(`${SHORTCODE}${PASSKEY}${timestamp}`).toString('base64');
 
     try {
-        console.log('Starting STK push request');
+        // Obtain access token
         const { data: { access_token } } = await axios.get('https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials', {
             headers: {
                 Authorization: `Basic ${auth}`
             }
         });
 
-        console.log('Access token received:', access_token);
-
+        // Construct STK push payload
         const stkPushPayload = {
             BusinessShortCode: SHORTCODE,
             Password: password,
@@ -58,19 +60,18 @@ app.post('/stkpush', async (req, res) => {
             PartyB: SHORTCODE,
             PhoneNumber: phoneNumber,
             CallBackURL: CALLBACK_URL,
-            AccountReference: 'Test123',
-            TransactionDesc: 'Payment for XYZ'
+            AccountReference: 'Test123', // Replace with appropriate reference
+            TransactionDesc: 'Payment for XYZ' // Replace with appropriate description
         };
 
-        console.log('Sending STK push request with payload:', stkPushPayload);
-
+        // Send STK push request to Safaricom Daraja API
         const response = await axios.post('https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest', stkPushPayload, {
             headers: {
-                Authorization: `Bearer ${access_token}`
+                Authorization: `Bearer ${access_token}`,
+                'Content-Type': 'application/json'
             }
         });
 
-        console.log('STK push response received:', response.data);
         res.json(response.data);
     } catch (error) {
         console.error('Error during STK push:', error);
@@ -84,6 +85,7 @@ app.post('/stkpush', async (req, res) => {
     }
 });
 
+// Start the server
 app.listen(port, () => {
     console.log(`Server running on port ${port}`);
 });
