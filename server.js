@@ -30,12 +30,12 @@ app.get('/authenticate', async (req, res) => {
 
 app.post('/stkpush', async (req, res) => {
     const { phoneNumber, amount } = req.body;
-    const { SHORTCODE, LNM_PASSKEY, CALLBACK_URL } = process.env;
+    const { SHORTCODE, PASSKEY, CALLBACK_URL } = process.env;
 
     const auth = Buffer.from(`${process.env.CONSUMER_KEY}:${process.env.CONSUMER_SECRET}`).toString('base64');
 
     const timestamp = new Date().toISOString().replace(/[^0-9]/g, '').slice(0, -3);
-    const password = Buffer.from(`${SHORTCODE}${LNM_PASSKEY}${timestamp}`).toString('base64');
+    const password = Buffer.from(`${SHORTCODE}${PASSKEY}${timestamp}`).toString('base64');
 
     try {
         const { data: { access_token } } = await axios.get('https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials', {
@@ -44,7 +44,7 @@ app.post('/stkpush', async (req, res) => {
             }
         });
 
-        const response = await axios.post('https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest', {
+        const stkPushPayload = {
             BusinessShortCode: SHORTCODE,
             Password: password,
             Timestamp: timestamp,
@@ -54,9 +54,11 @@ app.post('/stkpush', async (req, res) => {
             PartyB: SHORTCODE,
             PhoneNumber: phoneNumber,
             CallBackURL: CALLBACK_URL,
-            AccountReference: 'Test123',
-            TransactionDesc: 'Payment for XYZ'
-        }, {
+            AccountReference: 'Test123', // Make sure this is appropriate for your application
+            TransactionDesc: 'Payment for XYZ' // Make sure this is appropriate for your application
+        };
+
+        const response = await axios.post('https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest', stkPushPayload, {
             headers: {
                 Authorization: `Bearer ${access_token}`
             }
@@ -64,11 +66,19 @@ app.post('/stkpush', async (req, res) => {
 
         res.json(response.data);
     } catch (error) {
-        res.status(500).send(error.message);
+        if (error.response) {
+            // The request was made and the server responded with a status code that falls out of the range of 2xx
+            res.status(error.response.status).send(error.response.data);
+        } else if (error.request) {
+            // The request was made but no response was received
+            res.status(500).send(error.request);
+        } else {
+            // Something happened in setting up the request that triggered an Error
+            res.status(500).send(error.message);
+        }
     }
 });
 
 app.listen(port, () => {
     console.log(`Server running on port ${port}`);
 });
-
