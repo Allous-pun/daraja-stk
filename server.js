@@ -24,6 +24,7 @@ app.get('/authenticate', async (req, res) => {
 
         res.json(response.data);
     } catch (error) {
+        console.error('Error during authentication:', error);
         res.status(500).send(error.message);
     }
 });
@@ -38,11 +39,14 @@ app.post('/stkpush', async (req, res) => {
     const password = Buffer.from(`${SHORTCODE}${PASSKEY}${timestamp}`).toString('base64');
 
     try {
+        console.log('Starting STK push request');
         const { data: { access_token } } = await axios.get('https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials', {
             headers: {
                 Authorization: `Basic ${auth}`
             }
         });
+
+        console.log('Access token received:', access_token);
 
         const stkPushPayload = {
             BusinessShortCode: SHORTCODE,
@@ -54,9 +58,11 @@ app.post('/stkpush', async (req, res) => {
             PartyB: SHORTCODE,
             PhoneNumber: phoneNumber,
             CallBackURL: CALLBACK_URL,
-            AccountReference: 'Test123', // Make sure this is appropriate for your application
-            TransactionDesc: 'Payment for XYZ' // Make sure this is appropriate for your application
+            AccountReference: 'Test123',
+            TransactionDesc: 'Payment for XYZ'
         };
+
+        console.log('Sending STK push request with payload:', stkPushPayload);
 
         const response = await axios.post('https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest', stkPushPayload, {
             headers: {
@@ -64,16 +70,15 @@ app.post('/stkpush', async (req, res) => {
             }
         });
 
+        console.log('STK push response received:', response.data);
         res.json(response.data);
     } catch (error) {
+        console.error('Error during STK push:', error);
         if (error.response) {
-            // The request was made and the server responded with a status code that falls out of the range of 2xx
             res.status(error.response.status).send(error.response.data);
         } else if (error.request) {
-            // The request was made but no response was received
             res.status(500).send(error.request);
         } else {
-            // Something happened in setting up the request that triggered an Error
             res.status(500).send(error.message);
         }
     }
