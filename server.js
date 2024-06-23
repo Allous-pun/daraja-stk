@@ -9,6 +9,11 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Define a default route handler for GET requests to "/"
+app.get('/', (req, res) => {
+  res.send('Welcome to the C2B payment system'); // Example response
+});
+
 // Endpoint for initiating C2B payment
 app.post('/c2b-payment', async (req, res) => {
   try {
