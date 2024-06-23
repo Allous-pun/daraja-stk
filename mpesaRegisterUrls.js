@@ -1,13 +1,13 @@
-// mpesaRegisterUrls.js
-
 const axios = require('axios');
-const validationUrl = 'https://your-vercel-app.vercel.app/api/validation'; // Replace with your actual URL
-const confirmationUrl = 'https://your-vercel-app.vercel.app/api/confirmation'; // Replace with your actual URL
+require('dotenv').config();
+
+const validationUrl = 'https://daraja-stk.vercel.app/api/validation';
+const confirmationUrl = 'https://daraja-stk.vercel.app/api/confirmation';
 
 async function mpesaRegisterUrls() {
     const payload = {
-        ShortCode: '4317082', // Replace with your Paybill or Till number
-        ResponseType: 'Complete', // Options: Completed, Cancelled
+        ShortCode: process.env.SHORTCODE,
+        ResponseType: 'Completed', 
         ConfirmationURL: confirmationUrl,
         ValidationURL: validationUrl
     };
@@ -15,8 +15,8 @@ async function mpesaRegisterUrls() {
     try {
         const response = await axios.post('https://sandbox.safaricom.co.ke/mpesa/c2b/v1/registerurl', payload, {
             auth: {
-                username: process.env.MPESA_CONSUMER_KEY, // Use environment variables
-                password: process.env.MPESA_CONSUMER_SECRET // Use environment variables
+                username: process.env.CONSUMER_KEY,
+                password: process.env.CONSUMER_SECRET
             },
             headers: {
                 'Content-Type': 'application/json'
@@ -30,4 +30,3 @@ async function mpesaRegisterUrls() {
 }
 
 module.exports = mpesaRegisterUrls;
-
