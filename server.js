@@ -1,6 +1,5 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-
 const validationHandler = require('./api/validation');
 const confirmationHandler = require('./api/confirmation');
 const c2bPaymentHandler = require('./c2b-payment');
