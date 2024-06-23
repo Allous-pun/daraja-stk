@@ -1,8 +1,12 @@
+// server.js
+
 const express = require('express');
 const bodyParser = require('body-parser');
-const mpesaRegisterUrls = require('./mpesaRegisterUrls'); // Import your function for registering M-Pesa URLs
-const validationHandler = require('./validation'); // Import validation endpoint handler
-const confirmationHandler = require('./confirmation'); // Import confirmation endpoint handler
+const mpesaRegisterUrls = require('./mpesaRegisterUrls');
+const validationHandler = require('./api/validation');
+const confirmationHandler = require('./api/confirmation');
+
+require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -11,12 +15,11 @@ const PORT = process.env.PORT || 3000;
 app.use(bodyParser.json());
 
 // Route for handling validation requests
-app.post('/validation', validationHandler);
+app.post('/api/validation', validationHandler);
 
 // Route for handling confirmation requests
-app.post('/confirmation', confirmationHandler);
+app.post('/api/confirmation', confirmationHandler);
 
-// Function to register URLs with M-Pesa (defined elsewhere)
 // Uncomment the following line to register URLs when server starts
 // mpesaRegisterUrls();
 
@@ -24,3 +27,4 @@ app.post('/confirmation', confirmationHandler);
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
 });
+
