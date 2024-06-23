@@ -1,42 +1,62 @@
 const express = require('express');
-const unirest = require('unirest'); // Ensure 'unirest' is installed via npm
+const axios = require('axios');
+require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Middleware to parse JSON bodies
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-// Endpoint for initiating STK push
-app.post('/stkpush', async (req, res) => {
+// Endpoint for initiating C2B payment
+app.post('/c2b-payment', async (req, res) => {
   try {
-    const response = await unirest.post('https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest')
-      .headers({
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer your_access_token_here' // Replace with actual token
-      })
-      .send({
-        // STK Push request payload
-        "BusinessShortCode": 174379,
-        "Password": "your_generated_password_here",
-        "Timestamp": "20240622232532",
-        "TransactionType": "CustomerPayBillOnline",
-        "Amount": 1,
-        "PartyA": 2547596389,
-        "PartyB": 174379,
-        "PhoneNumber": 2547596389,
-        "CallBackURL": "https://yourdomain.com/callback",
-        "AccountReference": "CompanyXLTD",
-        "TransactionDesc": "Payment of X"
-      });
+    const access_token = await getAccessToken();
 
-    console.log(response.body);
-    res.status(200).json(response.body);
+    const response = await axios.post(
+      'https://sandbox.safaricom.co.ke/mpesa/c2b/v1/simulate',
+      {
+        ShortCode: process.env.SHORTCODE,
+        CommandID: 'CustomerPayBillOnline',
+        Amount: req.body.amount,
+        Msisdn: req.body.phone_number,
+        BillRefNumber: 'account_number'
+      },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${access_token}`
+        }
+      }
+    );
+
+    console.log(response.data);
+    res.status(200).json(response.data);
   } catch (error) {
     console.error('Error occurred:', error.message);
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
+
+// Function to get access token from Safaricom
+async function getAccessToken() {
+  try {
+    const { data } = await axios.get(
+      'https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials',
+      {
+        auth: {
+          username: process.env.CONSUMER_KEY,
+          password: process.env.CONSUMER_SECRET
+        }
+      }
+    );
+
+    return data.access_token;
+  } catch (error) {
+    throw new Error('Failed to get access token');
+  }
+}
 
 // Start server
 app.listen(PORT, () => {
