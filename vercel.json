@@ -8,9 +8,16 @@
   ],
   "routes": [
     {
-      "src": "/(.*)",
+      "src": "/api/validation",
+      "dest": "/api/validation.js"
+    },
+    {
+      "src": "/api/confirmation",
+      "dest": "/api/confirmation.js"
+    },
+    {
+      "src": "/api/c2b-payment",
       "dest": "/server.js"
     }
   ]
 }
-
