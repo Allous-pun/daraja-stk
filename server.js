@@ -1,5 +1,3 @@
-// server.js
-
 const express = require('express');
 const bodyParser = require('body-parser');
 const mpesaRegisterUrls = require('./mpesaRegisterUrls');
@@ -20,11 +18,10 @@ app.post('/api/validation', validationHandler);
 // Route for handling confirmation requests
 app.post('/api/confirmation', confirmationHandler);
 
-// Uncomment the following line to register URLs when server starts
-// mpesaRegisterUrls();
+// Register URLs when server starts
+mpesaRegisterUrls();
 
 // Start server
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
 });
-
