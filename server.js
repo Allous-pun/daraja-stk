@@ -7,13 +7,13 @@ const PORT = process.env.PORT || 3000;
 app.use(bodyParser.json());
 
 // Route for handling validation requests
-app.use('/api/validation', require('./api/validation'));
+app.use('/validation', require('./validation'));
 
 // Route for handling confirmation requests
-app.use('/api/confirmation', require('./api/confirmation'));
+app.use('/confirmation', require('./confirmation'));
 
 // Route for C2B payment
-app.use(require('./c2b-payment'));
+app.use('/c2b-payment', require('./c2b-payment'));
 
 // Start the server
 if (process.env.NODE_ENV !== 'production') {
