@@ -1,25 +1,28 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+
+const validationHandler = require('./api/validation');
+const confirmationHandler = require('./api/confirmation');
+const c2bPaymentHandler = require('./c2b-payment');
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Middleware to parse JSON bodies
 app.use(bodyParser.json());
 
-// Route for handling validation requests
-app.use('/validation', require('./validation'));
+// Route for validation requests
+app.post('/api/validation', validationHandler);
 
-// Route for handling confirmation requests
-app.use('/confirmation', require('./confirmation'));
+// Route for confirmation requests
+app.post('/api/confirmation', confirmationHandler);
 
 // Route for C2B payment
-app.use('/c2b-payment', require('./c2b-payment'));
+app.post('/api/c2b-payment', c2bPaymentHandler);
 
 // Start the server
-if (process.env.NODE_ENV !== 'production') {
-    app.listen(PORT, () => {
-        console.log(`Server is running on http://localhost:${PORT}`);
-    });
-}
+app.listen(PORT, () => {
+  console.log(`Server is running on http://localhost:${PORT}`);
+});
 
 module.exports = app;
