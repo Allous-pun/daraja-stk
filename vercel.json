@@ -12,20 +12,24 @@
     {
       "src": "api/confirmation.js",
       "use": "@vercel/node"
+    },
+    {
+      "src": "c2b-payment.js",
+      "use": "@vercel/node"
     }
   ],
   "routes": [
     {
       "src": "/api/validation",
-      "dest": "/api/validation.js"
+      "dest": "api/validation.js"
     },
     {
       "src": "/api/confirmation",
-      "dest": "/api/confirmation.js"
+      "dest": "api/confirmation.js"
     },
     {
-      "src": "/api/c2b-payment",
-      "dest": "/server.js"
+      "src": "c2b-payment",
+      "dest": "c2b-payment.js"
     }
   ]
 }
