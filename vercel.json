@@ -4,6 +4,14 @@
     {
       "src": "server.js",
       "use": "@vercel/node"
+    },
+    {
+      "src": "api/validation.js",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "api/confirmation.js",
+      "use": "@vercel/node"
     }
   ],
   "routes": [
