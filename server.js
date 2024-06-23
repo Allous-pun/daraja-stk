@@ -20,7 +20,7 @@ app.post('/api/c2b-payment', async (req, res) => {
     const passkey = 'bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919';
     const consumerKey = 'zXUpzX3VM4ES9NRnMG80Qkaz3Xj58bGP0A2mETvcJslNALv5';
     const consumerSecret = 'rlM19wspOGOvhsWuMfg2BO0Y8ia3EbEsnCb5iHFidSQF25lxsLsuwzlMvAhV2z7k';
-    const timestamp = new Date().toISOString().replace(/[-:.TZ]/g, '');
+    const timestamp = new Date().toISOString().replace(/[-:.TZ]/g, '').slice(0, -3);
     const password = Buffer.from(shortCode + passkey + timestamp).toString('base64');
 
     try {
@@ -55,7 +55,7 @@ app.post('/api/c2b-payment', async (req, res) => {
         res.status(200).json(response.data);
     } catch (error) {
         console.error('Error initiating payment:', error.response ? error.response.data : error.message);
-        res.status(500).json({ message: 'Failed to initiate payment', error: error.message });
+        res.status(500).json({ message: 'Failed to initiate payment', error: error.response ? error.response.data : error.message });
     }
 });
 
