@@ -28,7 +28,7 @@
       "dest": "api/confirmation.js"
     },
     {
-      "src": "c2b-payment",
+      "src": "/c2b-payment",
       "dest": "c2b-payment.js"
     }
   ]
