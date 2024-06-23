@@ -18,7 +18,7 @@ app.post('/api/validation', validationHandler);
 app.post('/api/confirmation', confirmationHandler);
 
 // Route for C2B payment
-app.post('/api/c2b-payment', c2bPaymentHandler);
+app.post('/c2b-payment', c2bPaymentHandler);
 
 // Start the server
 app.listen(PORT, () => {
