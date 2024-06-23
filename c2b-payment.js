@@ -2,13 +2,12 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const axios = require('axios');
 const app = express();
-const PORT = process.env.PORT || 3000;
 
 // Middleware to parse JSON bodies
 app.use(bodyParser.json());
 
 // Route for C2B payment initiation
-app.post('/api/c2b-payment', async (req, res) => {
+app.post('/c2b-payment', async (req, res) => {
     const { phone_number, amount } = req.body;
     const shortCode = '4317082'; // Replace with your Paybill or Till number
     const passkey = 'bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919'; // Replace with your passkey
@@ -54,4 +53,3 @@ app.post('/api/c2b-payment', async (req, res) => {
 });
 
 module.exports = app;
-
